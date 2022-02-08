@@ -1,5 +1,7 @@
 
-REFER to tasks.md for serialised learnining experience.
+```diff
+- (REFER to tasks.md for serialised learnining experience.)
+```
 
 1) create network 
 ```
