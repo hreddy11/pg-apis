@@ -17,24 +17,36 @@ def user_selections(request):
 <html>
 <head>
     <title>Google Cloud Storage Bucket Items</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
     <script src="https://code.jquery.com/jquery-1.12.1.min.js"></script>
 </head>
 <body>
-    <h1>Google Cloud Storage Bucket Items</h1>
-    <form method="post" id="selection-form">
-        {% csrf_token %}
-        {% for blob in blobs %}
-            <div>
-                <input type="checkbox" name="selected_files" value="{{ blob.name }}">
-                {{ blob.name }}
-            </div>
-        {% endfor %}
-        <button type="button" id="submit-button">Download Selected Files</button>
-    </form>
+    <div class="container">
+        <h1>Google Cloud Storage Bucket Items</h1>
+        <form method="post" id="selection-form">
+            {% csrf_token %}
+            {% for blob in blobs %}
+                <div class="checkbox">
+                    <label>
+                        <input type="checkbox" name="selected_files" value="{{ blob.name }}">
+                        {{ blob.name }}
+                    </label>
+                </div>
+            {% endfor %}
+            <button type="button" id="submit-button" class="btn btn-primary" disabled>Download Selected Files</button>
+        </form>
+    </div>
 
     <script>
         $(function () {
-            $('#submit-button').click(function () {
+            var $submitBtn = $('#submit-button');
+
+            $('input[name="selected_files"]').change(function () {
+                var anyChecked = $('input[name="selected_files"]:checked').length > 0;
+                $submitBtn.prop('disabled', !anyChecked);
+            });
+
+            $submitBtn.click(function () {
                 var selectedFiles = $('input[name="selected_files"]:checked').map(function () {
                     return $(this).val();
                 }).get();
@@ -61,6 +73,7 @@ def user_selections(request):
     </script>
 </body>
 </html>
+
 
 
 
