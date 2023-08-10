@@ -1,0 +1,66 @@
+urlpatterns = [
+    path('', views.index, name='index'),
+    path('user_selections/', views.user_selections, name='user_selections'),
+]
+
+import json
+from django.http import JsonResponse
+
+def user_selections(request):
+    if request.method == 'POST':
+        selected_files = json.loads(request.body)
+        return JsonResponse({'selected_files': selected_files})
+    else:
+        return JsonResponse({'error': 'Invalid request method'})
+
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Google Cloud Storage Bucket Items</title>
+    <script src="https://code.jquery.com/jquery-1.12.1.min.js"></script>
+</head>
+<body>
+    <h1>Google Cloud Storage Bucket Items</h1>
+    <form method="post" id="selection-form">
+        {% csrf_token %}
+        {% for blob in blobs %}
+            <div>
+                <input type="checkbox" name="selected_files" value="{{ blob.name }}">
+                {{ blob.name }}
+            </div>
+        {% endfor %}
+        <button type="button" id="submit-button">Download Selected Files</button>
+    </form>
+
+    <script>
+        $(function () {
+            $('#submit-button').click(function () {
+                var selectedFiles = $('input[name="selected_files"]:checked').map(function () {
+                    return $(this).val();
+                }).get();
+
+                if (selectedFiles.length > 0) {
+                    $.ajax({
+                        type: 'POST',
+                        url: '/user_selections/',
+                        headers: {
+                            'X-CSRFToken': '{{ csrf_token }}'
+                        },
+                        data: JSON.stringify(selectedFiles),
+                        contentType: 'application/json',
+                        success: function (data) {
+                            console.log('Response from server:', data);
+                        },
+                        error: function (error) {
+                            console.error('Error:', error);
+                        }
+                    });
+                }
+            });
+        });
+    </script>
+</body>
+</html>
+
+
+
