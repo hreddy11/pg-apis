@@ -117,5 +117,15 @@ def user_selections(request):
 {% endblock %}
 
 
+<style>
+    .autosize {
+        resize: none;
+        overflow: hidden;
+        height: auto;
+    }
+    .autosize:focus {
+        outline: none;
+    }
+</style>
 
 
