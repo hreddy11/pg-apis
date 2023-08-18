@@ -74,6 +74,48 @@ def user_selections(request):
 </body>
 </html>
 
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container">
+    <h2>User Information</h2>
+    <table class="table table-bordered">
+        <tbody>
+            <tr>
+                <th>ID</th>
+                <td>{{ user_info.id }}</td>
+            </tr>
+            <tr>
+                <th>Name</th>
+                <td>{{ user_info.name }}</td>
+            </tr>
+            <tr>
+                <th>Info</th>
+                <td>
+                    <div class="input-group">
+                        <input id="info-input" type="text" class="form-control" value="{{ user_info.info }}" readonly>
+                        <span class="input-group-btn">
+                            <button class="btn btn-default" type="button" onclick="copyToClipboard()">
+                                Copy
+                            </button>
+                        </span>
+                    </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+</div>
+
+<script>
+    function copyToClipboard() {
+        var copyText = document.getElementById("info-input");
+        copyText.select();
+        document.execCommand("copy");
+        alert("Info copied to clipboard!");
+    }
+</script>
+{% endblock %}
+
 
 
 
