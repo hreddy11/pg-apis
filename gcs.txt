@@ -1,3 +1,32 @@
+from django.shortcuts import render
+from google.cloud import storage
+
+def move_blobs(request):
+    if request.method == 'POST':
+        selected_blobs = request.POST.getlist('selected_blobs')
+        source_folder = 'source-folder'  # Replace with your source folder
+        destination_folder = 'destination-folder'  # Replace with your destination folder
+
+        # Initialize Google Cloud Storage client
+        client = storage.Client()
+
+        # Replace 'your-bucket-name' with your actual GCS bucket name
+        bucket = client.bucket('your-bucket-name')
+
+        for blob_name in selected_blobs:
+            source_blob = bucket.blob(f'{source_folder}/{blob_name}')
+            destination_blob = bucket.blob(f'{destination_folder}/{blob_name}')
+            destination_blob.upload_from_string(source_blob.download_as_text())
+            source_blob.delete()
+
+        return render(request, 'move_blobs_success.html')
+
+    # Handle GET request to display the selection form
+    return render(request, 'move_blobs_form.html')
+
+
+-----
+
 <script>
     $(document).ready(function() {
         // Handler for "Select All" button
