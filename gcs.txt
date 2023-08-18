@@ -1,20 +1,39 @@
-<body>
-    <h1>Select GCS Blobs</h1>
-    <button id="select-all-btn">Select All</button>
-    <form id="blob-selection-form" method="POST">
-        {% csrf_token %}
-        {% for blob in blobs %}
-        <div>
-            <label>
-                <input type="checkbox" name="selected_blobs" value="{{ blob.name }}">
-                {{ blob.name }}
-            </label>
-        </div>
-        {% endfor %}
-        <button type="submit">Submit Selection</button>
-    </form>
-    <!-- ... JavaScript code ... -->
-</body>
+<script>
+    $(document).ready(function() {
+        // Handler for "Select All" button
+        $('#select-all-btn').on('click', function(e) {
+            e.preventDefault();
+            $('input[name="selected_blobs"]').prop('checked', true);
+        });
+
+        // Handler for "Submit Selection" button
+        $('#blob-selection-form').on('submit', function(e) {
+            e.preventDefault();
+
+            var selectedBlobs = [];
+            $('input[name="selected_blobs"]:checked').each(function() {
+                selectedBlobs.push($(this).val());
+            });
+
+            // Send selected blobs to the server using AJAX
+            $.ajax({
+                url: '{% url "process_selection" %}',
+                method: 'POST',
+                data: {
+                    selected_blobs: selectedBlobs,
+                    csrfmiddlewaretoken: $('input[name="csrfmiddlewaretoken"]').val()
+                },
+                success: function(data) {
+                    // Display a message to the user
+                    $('#message').text('Selection submitted successfully');
+                },
+                error: function(xhr, textStatus, errorThrown) {
+                    console.log('Error:', errorThrown);
+                }
+            });
+        });
+    });
+</script>
 
 
 <script>
