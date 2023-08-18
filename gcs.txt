@@ -1,0 +1,62 @@
+from django.http import JsonResponse
+
+def process_selection(request):
+    if request.method == 'POST':
+        selected_blobs = request.POST.getlist('selected_blobs')
+
+        # Perform backend logic with selected_blobs
+
+        return JsonResponse({'message': 'Selection processed successfully'})
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+<script>
+    $(document).ready(function() {
+        $('#blob-selection-form').on('submit', function(e) {
+            e.preventDefault();
+
+            var selectedBlobs = [];
+            $('input[name="selected_blobs"]:checked').each(function() {
+                selectedBlobs.push($(this).val());
+            });
+
+            // Send selected blobs to the server using AJAX
+            $.ajax({
+                url: '{% url "process_selection" %}',
+                method: 'POST',
+                data: {
+                    selected_blobs: selectedBlobs,
+                    csrfmiddlewaretoken: $('input[name="csrfmiddlewaretoken"]').val()
+                },
+                success: function(data) {
+                    // Handle success response
+                    console.log('Selection sent successfully');
+                },
+                error: function(xhr, textStatus, errorThrown) {
+                    console.log('Error:', errorThrown);
+                }
+            });
+        });
+    });
+</script>
+
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Select GCS Blobs</title>
+</head>
+<body>
+    <h1>Select GCS Blobs</h1>
+    <form id="blob-selection-form" method="POST">
+        {% csrf_token %}
+        {% for blob in blobs %}
+        <div>
+            <label>
+                <input type="checkbox" name="selected_blobs" value="{{ blob.name }}">
+                {{ blob.name }}
+            </label>
+        </div>
+        {% endfor %}
+        <button type="submit">Submit Selection</button>
+    </form>
+</body>
+</html>
