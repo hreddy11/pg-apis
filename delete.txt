@@ -4,7 +4,7 @@ from google.auth import default
 def trigger_dag(dag_id):
     """Triggers a Cloud Composer DAG using the Airflow REST API."""
 
-    url = f"https://<AIRFLOW_WEB_SERVER_URL>/api/experimental/dags/{dag_id}/dag_runs"
+    url = f"https://<AIRFLOW_WEB_SERVER_URL>/api/v1/dags/{dag_id}/dag_runs"
 
     access_token = get_access_token()  # Retrieve access token securely
     headers = {"Authorization": f"Bearer {access_token}"}
