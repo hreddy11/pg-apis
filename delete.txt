@@ -1,31 +1,30 @@
 import requests
 from google.auth import default
 
+def trigger_dag(dag_id):
+    """Triggers a Cloud Composer DAG using the Airflow REST API."""
+
+    url = f"https://<AIRFLOW_WEB_SERVER_URL>/api/experimental/dags/{dag_id}/dag_runs"
+
+    access_token = get_access_token()  # Retrieve access token securely
+    headers = {"Authorization": f"Bearer {access_token}"}
+
+    try:
+        response = requests.post(url, headers=headers)  # Simple trigger without configuration
+        response.raise_for_status()
+        print(f"DAG '{dag_id}' triggered successfully!")
+    except requests.exceptions.RequestException as e:
+        print(f"Error triggering DAG '{dag_id}': {e}")
+
 def get_access_token():
-  """Retrieves an access token using Google Cloud Application Default Credentials."""
-  credentials, project_id = default()
-  if credentials.requires_explicit_scopes():
-    credentials.refresh(scopes=["https://www.googleapis.com/auth/cloud-platform"])
-  return credentials.token
+    """Retrieves an access token using Google Cloud Application Default Credentials."""
+    credentials, project_id = default()
+    if credentials.requires_explicit_scopes():
+        credentials.refresh(scopes=["https://www.googleapis.com/auth/cloud-platform"])
+    return credentials.token
 
-def trigger_dag(request):
-  """Triggers a Cloud Composer DAG using the Airflow REST API."""
+# Replace with your actual Airflow web server URL and DAG ID
+airflow_url = "<AIRFLOW_WEB_SERVER_URL>"
+dag_id = "<DAG_ID>"
 
-  # Replace with your Airflow web server URL and DAG ID
-  url = "https://<AIRFLOW_WEB_SERVER_URL>/api/experimental/dags/<DAG_ID>/dag_runs"
-
-  # Retrieve access token securely
-  access_token = get_access_token()
-  headers = {"Authorization": f"Bearer {access_token}"}
-
-  # Optional: Set additional configuration for the DAG run
-  data = {"conf": {"key": "value"}}
-
-  try:
-    response = requests.post(url, headers=headers, json=data)
-    response.raise_for_status()
-    print(f"Successfully triggered DAG: {response.json()}")
-  except requests.exceptions.RequestException as e:
-    print(f"Error triggering DAG: {e}")
-
-  return "DAG triggered successfully!"
+trigger_dag(dag_id)  # Call the function to trigger the DAG
