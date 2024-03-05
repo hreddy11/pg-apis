@@ -1,7 +1,7 @@
 from google.auth import default
 from google.auth.transport.requests import Request
-from google.cloud import composer_v1beta1
 from google.oauth2 import service_account
+from googleapiclient.discovery import build
 
 # Replace these variables with your actual values
 project_id = 'your-project-id'
@@ -11,17 +11,18 @@ dag_name = 'your-dag-name'
 
 # Authenticate using service account credentials
 credentials = service_account.Credentials.from_service_account_file(
-    'path/to/your/service-account-key.json'
+    '/path/to/your/service-account-key.json',
+    scopes=['https://www.googleapis.com/auth/cloud-platform']
 )
 
-# Create the client for Cloud Composer
-client_options = {'api_endpoint': f'{location}-composer.googleapis.com'}
-client = composer_v1beta1.EnvironmentsClient(credentials=credentials, client_options=client_options)
+# Build the Cloud Composer API client
+service = build('composer', 'v1', credentials=credentials)
 
 # Trigger the DAG
-dag_run = client.create_dag_run(
+request = service.projects().locations().environments().dagRuns().create(
     parent=f'projects/{project_id}/locations/{location}/environments/{composer_environment}',
-    dag_run={'dag_name': dag_name}
+    body={'dag_run': {'dag_name': dag_name}}
 )
+response = request.execute()
 
-print(f'DAG run {dag_run.name} created.')
+print(f'DAG run {response["name"]} created.')
