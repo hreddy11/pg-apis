@@ -26,3 +26,5 @@ request = service.projects().locations().environments().dagRuns().create(
 response = request.execute()
 
 print(f'DAG run {response["name"]} created.')
+
+pip install google-auth google-auth-oauthlib google-auth-httplib2 google-api-python-client
