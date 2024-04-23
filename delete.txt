@@ -19,15 +19,13 @@ def export_bigquery_data_to_gcs(project_id, dataset_id, table_id, destination_bu
         ORDER BY extract_order
     """
     
-    # Execute the job
-    job = client.extract_table(
-        source=query,  # Specify the SQL query as the source
-        destination_uris=[destination_uri],
-        job_config=job_config,
-        location="US",  # Set the location to match your dataset's location
-    )
+    # Execute the query
+    query_job = client.query(query)
 
-    job.result()  # Waits for the job to complete.
+    # Export the query result to Google Cloud Storage
+    extract_job = query_job.result().extract(destination_uri, job_config=job_config)
+
+    extract_job.result()  # Waits for the job to complete.
 
     print(f"Data exported to gs://{destination_bucket}/{destination_blob_name}")
 
